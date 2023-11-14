@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"time"
 )
 
 func main() {
@@ -30,8 +31,20 @@ func main() {
 		go checkLink(link, c)
 	}
 
+	/*
 	for { // This is a infinite loop
-		fmt.Println(<-c,c)  // => recieving info from the channel
+		go checkLink(<-c,c)  // => recieving info from the channel
+	}
+	*/
+
+	// Below is an equivalent to the above for loop, this is more clear to understand
+	// This means we are waitin for something to arrive in channel
+	for l := range c {
+		// It is function literal, similar to python lambda function
+		go func(link string) {
+			time.Sleep(time.Second)
+			checkLink(link, c) // link here comes from the below line, accepts argument
+		}(l) // l is passed to the function literal(call by value)
 	}
 }
 
